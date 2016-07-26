@@ -23,7 +23,6 @@ So we are looking for some kind of continuous embedding of logical formulas: (Fo
 
 The parameters (which we wish to learn) are the values I(c) for some of the constant and function symbols, and I(p/k) for some of the predicate symbols. The loss function can be taken to be a "margin loss" -- measure the difference between a positive and a negative tuple for the given predicate p/k, and we seek to maximize it. (Other loss functions are possible.)
 
-So we desire 
 
 The work on LSTMs for textual entailment establishes that they can be used for single step entailment.
 Can they be used for multi-step entailments, i.e. to implement reasoning, in a first order setting.
