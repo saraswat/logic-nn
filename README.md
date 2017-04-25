@@ -14,6 +14,7 @@ We want to try something different, using techniques such as stochastic gradient
 SGD: The basic idea is that you define a function f(theta), parametrized by theta, and a loss function L. The setting is supervised, i.e. you are given a possibly large set of obsverations O of the form (x,y), where each of the x and y can be tuples of a given fixed size. You are looking for a setting of the parameters theta which minimizes the loss function. Gradient descent proceeds by assuming a current value u of the parameters theta, using it to compute the loss L(y, f(u)(x)) and then propagate the loss back through the function f, using the partial derivatives do f/do j for each parameter j in theta, to update the parameters. Repeat across all observations. For various choices of the function f, e.g. feed-forward neural nets, recurrent neural nets this technique has proved remarkably robust in practice, across a wide variety of data-sets, e.g. in vision, and in speech, and in some natural language tasks such as machine translation, text generation etc. 
 
 So we are looking for some kind of continuous embedding of logical formulas: (For now consider the underlying logic is untyped, in practice we will want to use types)
+
 1. Some space B for the interpretation of Boolean formulas, with interpretations for the logical connectives (conjunction, disjunction, negation, implication -- we should experiment with both intuitionistic and classical interpretations).
 2. An embedding I(c) of individual constant symbols c into some space U of interpretations. (Similarly for function symbols.)
 3. An embedding of the all and some quantifiers, all:(U->B)->B some:(U->B)->B
@@ -22,7 +23,6 @@ So we are looking for some kind of continuous embedding of logical formulas: (Fo
 
 The parameters (which we wish to learn) are the values I(c) for some of the constant and function symbols, and I(p/k) for some of the predicate symbols. The loss function can be taken to be a "margin loss" -- measure the difference between a positive and a negative tuple for the given predicate p/k, and we seek to maximize it. (Other loss functions are possible.)
 
-So we desire 
 
 The work on LSTMs for textual entailment establishes that they can be used for single step entailment.
 Can they be used for multi-step entailments, i.e. to implement reasoning, in a first order setting.
