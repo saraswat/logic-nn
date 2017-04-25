@@ -31,8 +31,8 @@
 \def\mtimes{}
 \def\LL#1{#1}
 \title{Notes on differentiable logic \\
-{\small Logic through vector spaces} \\
-{\small ***DRAFT***}}
+{\small Logic through vector calculus} \\
+{\small ***DRAFT v0.03 ***}}
 
 \author{Vijay Saraswat \\
 IBM T.J. Watson Research Center\\
@@ -57,7 +57,7 @@ Chicago, IL 60604 \\
 \begin{abstract}
 First-order logic has crisp notions of individuation and predication: individuals are taken  to be fully formed objects from some underlying set $U$ which typically has no internal structure, and $k$-ary predicates are taken to be $k$-ary maps from $U$ to $B=\{0,1\}$ that specify whether a particular tuple is in the relation or not. 
 
-Recent years have seen some remarkable successes in the application of machine learning techniques to a variety of applications in speech, vision and natural language understanding. Typically, these successes are based on the use of continuous (non-convex) optimization techniques (such as gradient descent). The need to account for logical structure has led to the development of several {\em ad hoc} techniques based on embedding individuals into $n$-dimensional vectors (``distributional representations''), and treating predicates as tensors \cite{bishan-iclr15,rocktaschel-2015,coecke-2010,grefenstette-2013,order-embedding-kiros}, without a proper understanding of how these techniques relate to logic. 
+Recent years have seen some remarkable successes in the application of machine learning techniques to a variety of applications in speech, vision and natural language understanding. Typically, these successes are based on the use of continuous (non-convex) optimization techniques (such as gradient descent). The need to account for logical structure has led to the development of several {\em ad hoc} techniques based on embedding individuals into $n$-dimensional vectors (``distributional representations''), and treating predicates as tensors \cite{coecke-2010,grefenstette-2013,socher-ntn-2013,bishan-iclr15,rocktaschel-2015,order-embedding-kiros,TransIE}, without a proper understanding of how these techniques relate to logic. 
 
 In these notes we give an account of a precise embedding of first-order logic (over finitary structures) into vector spaces over $\Re$, via the ``Fourier expansion'' of Boolean functions as multilinear polynomials. This immediately permits a continuous embedding of predicates into $[0,1]^n \rightarrow [0,1]$ that enables techniques such as gradient descent to be used directly on such formulas.
 
@@ -108,14 +108,14 @@ minima. Under other conditions, the Expectation Maximization algorithm
 may be used.
 
 A very powerful instance of this general picture is obtained with
-(feed forward) {\em
-  deep neural networks}. In this setting, the parametric function
+(feed forward) {\em deep neural networks} (see, e.g., \cite{deep-learning-nature-2015}). 
+In this setting, the parametric function
 $f_{\theta}$ is given by $k$ layers of compute elements (called
 ``neurons''), an element in layer $i$ connected to some (possibly all)
 elements in the preceding layer. Each neuron is associated with a set
 of weights $W$ (its parameters) used to linearly sum its inputs.
 (There is also usually a bias value.) Some non-linear
-(but differentiable) thresholding function (e.g. sigmoid, $\lambda
+(but piece-wise differentiable) thresholding function (e.g. sigmoid, $\lambda
 t.\,(1/(1+e^{-t}))$) is used to determine the output of this
 element. One can think of the entire network as specified by a
 $k$-nested functional term, involving summations and pointwise
@@ -128,7 +128,8 @@ What has made the machine learning problem of great interest in recent
 years is the availability of large amounts of labeled training data,
 and vast amounts of (CPU, GPU) computation that can be brought to bear
 to train the given function. A better understanding of how training
-algorithms such as asynchronous stochastic gradient networks can be
+algorithms such as asynchronous stochastic gradient networks 
+\cite{distbelief} can be
 made to work for deep networks has brought about a startling increase
 in accuracy in many applications, and a significant increase in the
 range of applications amenable to these techniques.
@@ -141,23 +142,62 @@ does. At hand is simply the value of the (potentially billions of)
 parameters, poor material from which to construct causally coherent
 explanations accessible to a human observer.
 
-We are interested in developing the foundations of a powerful framework for machine learning and reasoning which gives the programmer flexibility in expressing significant amount of prior knowledge in the struture of the space $\cal F$. We wish to use the full power of a general-purpose programming framework, allied with machine learning. Conceptually, the programmer may write programs in a high-level language while leaving ``holes'' (also called {\em sketches}, \cite{solar-lezama:asplos06}) to be filled in by an appropriate assistant, such as a supervised machine learning algorithm, or a constraint solver. For instance, a program may leave the definition of a procedure {\em q?} unspecified, merely leaving in place an invocation of the procedure on particular arguments (e.g.{} {\em q?(X,3,true)}). The task of the solver is to determine the definition of the procedure so that the overall program exhibits the desired observations (approximately). 
+We are interested in developing the foundations of a powerful
+framework for machine learning and reasoning which gives the
+programmer flexibility in expressing significant amount of prior
+knowledge in the struture of the space $\cal F$. We wish to use the
+full power of a general-purpose programming framework, allied with
+machine learning. Conceptually, the programmer may write programs in a
+high-level language while leaving ``holes'' (also called {\em
+  sketches}, \cite{solar-lezama:asplos06}) to be filled in by an
+appropriate automated assistant, such as a supervised machine learning
+algorithm, or a constraint solver. For instance, a program may leave
+the definition of a procedure {\em q?} unspecified, merely leaving in
+place an invocation of the procedure on particular arguments (e.g.{}
+{\em q?(X,3,true)}). The task of the solver is to determine the
+definition of the procedure so that the overall program exhibits the
+desired observations (approximately).   
 
-While considerable progress has been made in the last decade on the use of constraint solvers for sketching (see, e.g., \cite{armando}), the use of machine learning for sketching is an unexplored area. In particular, it calls for developing a ``differentiable'' programming language in which programs are embedded in a continuous space, may have user-specified parameters, and are end-to-end differentiable with respect to these parameters. 
+While considerable progress has been made in the last decade on the
+use of constraint solvers for sketching (see, e.g., \cite{armando}),
+the use of machine learning for sketching is an unexplored area. In
+particular, it calls for developing a ``differentiable'' programming
+language in which programs are embedded in a continuous space, may
+have user-specified parameters, and are end-to-end differentiable with
+respect to these parameters.  
 
-Of particular interest to us are programming languages based on logic -- such as definite clause logic programming \cite{Kowalski76} and concurrent constraint programming \cite{CCP}, including probabilistic versions thereof \cite{muggleton:srl07,Gupta97b,cussens}. Such frameworks carry dual advantages -- they permit the direct expression of knowledge about the real world (via first-order formalizations), and they offer the full power of programming languages for algorithmic tasks.
+Of particular interest to us are programming languages based on logic
+-- such as definite clause logic programming \cite{Kowalski76} and
+concurrent constraint programming \cite{CCP}, including probabilistic
+versions thereof \cite{muggleton:srl07,Gupta97b,cussens}. Such
+frameworks carry dual advantages -- they permit the direct expression
+of knowledge about the real world (via first-order formalizations),
+and they offer the full power of programming languages for algorithmic
+tasks. 
 
-The focus of this note is to establish the foundations for a continuous embedding of logic. Future version of this note / subsequent papers will develop machine learning applications and implementations.
+The focus of this note is to establish the foundations for a
+continuous embedding of logic. Future version of this note /
+subsequent papers will develop machine learning applications and
+implementations. 
 
 \section{Basic Idea}
-We develop a continuous embedding for first-order logic, building on the ideas of \cite{boolean-function}. In essence, the universe of individuals is taken to be $U=\{0,1\}^n$ the space of $n$-vectors, predicates are thought of as multilinear polynomials from $U^k$ to $B=\{0,1\}$, and logical functions are taken as maps from $U^k$ to $U$. 
+We develop a continuous embedding for first-order logic, building on
+the ideas of \cite{boolean-function}. Let $B=\{0,1\}$, $I=[0,1]$,
+$U=B^n$ (the space of $n$-vectors over $B$) and $V=I^n$. In essence, the universe of
+individuals is taken to be $U$, predicates are thought of as {\em multilinear polynomials} from $U^k$ to
+$B$, and logical functions are taken as maps from $U^k$ to $U$. The
+polynomial representation (also called the {\em Fourier expansion})
+provides the basis for an embedding of  predicates into the space of
+continuous functions $V^k \rightarrow I$ and an embedding of logical
+functions into continuous functions $V\rightarrow V$.   
 
- We shall see that such maps can be represented as real-valued multilinear polynomials. This provides the basis for an embedding of predicates into the space of continuous functions $[0,1]^n\rightarrow [0,1]$ and an embedding of logical functions into continuous functions $[0,1]^n \rightarrow [0,1]$. 
-
-Note that the set of all Boolean functions in $n$ variables forms a vector space over $\Re$. The elementary monomials $\Pi_{i\in A} x_i$ (with $A \subseteq \{1,\ldots, n\}$) form a basis. (The identity $x\mtimes x=x$ can be used to reduce all monomials to this form.)
+Note that the set of all Boolean functions in $n$ variables forms a
+vector space over $\Re$. The elementary monomials $\Pi_{i\in A} x_i$
+(with $A \subseteq \{1,\ldots, n\}$) form a basis. (The identity
+$x\mtimes x=x$ can be used to reduce all monomials to this form.) 
 
 \subsection{Propositional logic}\label{section:prop-logic}
-Let the underlying base domain be $\{0,1\}$, with $0$ interpreted as false and $1$ as true. Define $\bar{a}$ as $1-a$. 
+Let the underlying base domain be $B$, with $0$ interpreted as false and $1$ as true. Define $\bar{a}$ as $1-a$. Define:
 
 \begin{align*}
   \LL{\neg a} &= \bar{\LL{a}}\\
@@ -172,7 +212,7 @@ The definition of the other logical operators follows:
   \LL{a = b} &=\LL{a}\mtimes \LL{b} + \bar{\LL{a}}\bar{\LL{b}} =\overline{(\LL{a}-\LL{b})^2}
   \end{align*}
 
-The indicator function $\Ind_a(x)$ which for $a,x \in \{0,1\}$ returns
+The indicator function $\Ind_a(x)$ which for $a,x \in B$ returns
 $1$ if $a$ equals $x$ and $0$ otherwise, is just $\_=\_$. By
 $\Ind_a(x)$ (for $a,x$ $n$-vectors over $\{0, 1\}$) we will mean $\Pi_{i
   \in 1\ldots n} \Ind_{a_i}(x_i)$.  Therefore, any function
@@ -195,9 +235,9 @@ and2(x)  &= 1\mtimes \Ind_{(1,1)}(x) + 0\mtimes\Ind_{(1,0)}(x) + 0\mtimes\Ind_{(
 \end{align*}
 
 \subsection{Representing first-order logic}
-For now we shall consider only finite domains (the finiteness assumption of the underlying domain is standard practice in machine learning.
+For now we shall consider only finite domains (the finiteness assumption of the underlying domain is standard practice in machine learning).
 
-We shall assume an external mechanism has been used to identify the individuals in the domain of interest to us, based on empirically available data (e.g.{} the characters in some novel). Further, this may have been done using ``distributional'' techniques (``you shall know the meaning of words by the company they keep''), so that the individuals are in fact represented as (dense) vectors in some high dimensional space $U=\{0,1\}^n$ \cite{word-to-vec}. This linear representation automatically comes with a ``built-in'' similarity relation $\sim$ (the cosine distance between the vectors). The value of $n$ will depend on the amount of data available and the number of individuals; $n=300$ and $n=600$ have been used to create vectors for words in various corpora. 
+We shall assume an external mechanism has been used to identify the individuals in the domain of interest to us, based on empirically available data (e.g.{} the characters in some novel). Further, this may have been done using ``distributional'' techniques (``you shall know the meaning of words by the company they keep''), so that the individuals are in fact represented as (dense) vectors in some high dimensional space $U$ \cite{word-to-vec}. This linear representation automatically comes with a ``built-in'' similarity relation $\sim$ (the cosine distance between the vectors). The value of $n$ will depend on the amount of data available and the number of individuals; $n=300$ and $n=600$ have been used to create vectors for words in various corpora. 
 
 We can use the technique of indicator functions to represent a $k$-ary predicate $p$ as a multilinear polynomial over $kn$ variables. 
 $$p(x_1,\ldots, x_k)= \Sigma_{a_1,\ldots,a_k \in \{0,1\}^n} p(a_1, \ldots, a_k) \mtimes \Pi_{i \in 1\ldots k} \Ind_{a_i}(x_i)$$
@@ -213,7 +253,8 @@ Thus any first-order formula (with equality) in a logical vocabulary $L$ can be 
 \subsection{Tensor representation}
 A multilinear function $U^k \rightarrow \Re$ can be represented directly as a tensor $T^k(U)$ \cite[Chapter 8]{lee-book-2000}. The tensor maps a tuple \tuple{u_1,\ldots, u_k} to $1$ if the tuple is in the relation and to $0$ otherwise. Function application is implemented through tensor contraction. Note that in practice such a tensor is implemented merely as a $k$-dimensional array with $n$ elements in each dimension. 
 
-A similar observation is made in \cite{grefenstette-2013}.
+A similar observation is made in \cite{grefenstette-2013} (though the
+underlying connection with multilinear polynomials is not 
 
 \subsection{Continuous embedding}
 We now take the all important step of passing to the continuous version of the above representation. 
@@ -227,6 +268,8 @@ variables ranging over $[0,1]$. It is easy to see that the result will also be i
 Similarly for $f^c$. 
 
 The intuition is that $[0,1]^n$ represents a continuous smearing of the space $\{0,1\}^n$ of ``ideal'' individuals. The polynomial representation of a relation faithfully represents the behavior of the original (discrete) relation on the ideal points, and represents the behavior on intermediate (``smeared'') points as a linear combination of the behavior on ideal points.\footnote{Should be able to formulate using probabilities and expectations.}
+
+The rules for differentiation of these polynomials wrt a variable are standard. 
 
 \begin{example}
 Assume the underlying domain is expressible as 2-dimensional vectors. Let {\em bill} be represented by $(1, 0)$, {\em hilary} by $(0,1)$, and the extension of the predicate {\em love/2} be given by
@@ -254,12 +297,51 @@ $(0.5)(0.5)(1)(1)+(0.5)(0.5)(0)(0)+(0.5)(0.5)(1)(1)=0.5$, and the degree to whic
 
 \end{example}
 
+\subsection{Expressiveness}
+We note in passing that by adding max and step functions we can represent any $1$-Lipschitz function in the following sense. This monomials as discussed above, together with max and step functions
+
+Consider the metric $d(X,Y) = max \{\lvert x_i - y_i \rvert \mid i\in 1\ldots n \}$ over $I^n$. For a 
+rational number $r$ s.t. $0 \leq r \leq 1$ and $Q$ a vector of rational numbers, let $step_{r,Q}:I^n \rightarrow \Re$ be defined as
+$max(0, r-d(X,Q))$. This is the ``step'' function that is $r$ at $X$, then drops off to zero at the maximum possible rate. 
+
+\begin{definition}
+  Let $\cal F$ be the functions generated thus: any multilinear function is in $\cal F$; if $f,g \in {\cal F}$, then so is $max(f,g)$; $step_{r,Q} \in {\cal F}$ for rational $r \in I$ s.t. $0 \leq r \leq 1$ and vector $Q$ of rationals.
+\end{definition}
+
+\begin{theorem}
+  For any $1$-Lipschitz function $g:I^n \rightarrow \Re$ and $\epsilon$ there exists an $f \in {\cal F}$ s.t. for all $X$, $\lvert g(X)-f(X) \rvert \lt \epsilon$.
+\end{theorem}
+In proof, consider the set $\{ step_{r,Q} \alt f(Q) \ge r \}$. Closing this set under finite $max$ yields a increasing sequence of functions that converges uniformly to $f$.
+
+(Note: this proof does not depend on monomials.)
 
 \section{Applications to Machine Learning}
 
-{\em TODO: develop CCP sketches -- programs with holes that are trained via SGD.}
 
-{\em Redo Bishan's work with this representation?}
+We outline some directions that open up as a result of our approach.
+
+\subsection{Learning arbitrary definite clauses}
+The representation of formulas as polynomials makes it possible to use symbolic approaches to answer some logical questions. Here we discuss the {\em rule extraction} task of \cite[Algorithm 1]{bishan-iclr15}.
+
+The basic approach in the paper is as follows. Entities are represented by $n$-vectors (as we discuss). A binary relation $p$ is represented as a matrix $\LL{p}$, with a predication $p(x,y)$ evaluated as $\LL{x}^t \LL{p}\LL{y}$.\footnote{\cite{bishan-iclr15} also discusses a form where predicates are represented as vectors; however this does not yield good results.} Their approach learns {\em closed path} definite clauses; these are clauses of the form:
+$$ p_1(X_1, X_2), p_2(X_2,X_3), \ldots, p_n(X_n, X_{n+1}) \rightarrow p(X_1, X_{n+1})$$
+Here $p_i$ are known binary relations (trained matrices are available for them); this set is closed under inversion, since the inverse of a relation can be obtain by matrix operations. The basic idea is to find ``high probability paths'' in the knowledge graph (entities are types of nodes, predicates are binary edges), and compute the matrix representing the relation between the starting vertex $a$ and the final vertex $b$ by composing the matrices of the relations along the path. This is then compared with the existing relation labeling the edge $(a,b)$ using the $L_2$ norm; the rule is accepted if the norm is below a certain threshold. An example of a learned rule is:
+\begin{lstlisting}
+ nationality(A,C) :- bornInCity(A,B), cityOfCountry(B,C).
+\end{lstlisting}
+
+The main drawback of \cite{bishan-iclr15} is that they have an {\em ad hoc} rule for conjunction which permits them to only represent conjunctions of ``adjacent'' relations via matrix multiply. They do not have general compositional rules which permit the computation of conjunction of arbitrary formulas. For instance their technique cannot be used to learn clauses such as: 
+\begin{lstlisting}
+ dualCitizen(A, C, C1) :- 
+   bornIn(A,B), cityOfCountry(B, C1), C != C1, 
+   residentOfCountry(C), 
+   naturalizedInCountry(C).
+\end{lstlisting}
+With the techniques of this paper we can proceed as follows. The key point is that formulas are polynomials that can be manipulated algebraically. Assume we have identified a first-order formula $\phi(\bar{X})$ as the candidate for the body of a clause with head (an atomic formula) $\psi(\bar{Y})$. Typically $\bar{Y}\subseteq \bar{X}$, consider for the moment that $\bar{X}=\bar{Y}$ (for the more general case we will need an order-reducing tensor operation, corresponding to projection or existential quantification). We need to determine whether the clause $\phi(\bar{X})\rightarrow \psi(\bar{Y})$ is the case. Operating symbolically on the corresponding polynomials, we need to determine whether $1-\phi(1-\psi) \approx 1$, i.e.{} $\phi \approx \phi\psi$. This can be done by tensor operations. 
+
+In essence, we can use the theory presented in this paper to address the problem of rule learning in a more general way.
+
+\subsection{CCP programs with sketches}
 
 \section{Work to do}
 
@@ -280,11 +362,12 @@ domain with $2^n$ classes.}
 
 {\em Go back to the work on constrained clustering, adding these kinds
 of representations of first-order constraints. But first have to find
-a tractable way of dealing with quantifiers.}
+a tractable way of dealing with quantifiers. Look to hyper-doctrinal paper as a general 
+way to introduce quantifiers.}
 
 {\em Applications in constraint programming?}
 
-\paragraph{Acknowledgements.} Luc de Raedt, Angelika Kimmig, Tom Mitchell, William Cohen, Bishan Yang, Michael Witbrock, \ldots
+\paragraph{Acknowledgements.} Luc de Raedt, Angelika Kimmig, Tom Mitchell, William Cohen, Bishan Yang, Michael Witbrock, Piero Molino, \ldots
 
 \bibliographystyle{alpha}
 \bibliography{master}
@@ -328,5 +411,12 @@ Let $\bar{x}$ stand for $(1-x)$. Every pseudo-Boolean function can also be repre
 \noindent where $b_k\geq 0$ for $k \in 1\ldots m$. 
 
 \section{Brief primer on tensors}
+The material here is based on \cite{lee-book-2000}.
+
+
+\begin{definition}[(Covariant) Tensor] For $V$ a finite-dimensional real vector space, a {\em covariant tensor} of rank $k$ over $V$ is a real-valued multilinear function of $k$ elements of $V$.
+\end{definition}
+
+By convention, a $0$ tensor is just a real number. Define $T^k(V)$ to be the set of all tensors of rank $k$ over $V$. $T^k(V)$ is a vector space under point-wise addition and scalar multiplication.
 
 \end{document}
