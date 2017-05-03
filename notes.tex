@@ -35,7 +35,7 @@
 \def\LL#1{#1}
 \title{Notes on differentiable logic \\
 {\small Logic through vector calculus} \\
-{\small ***DRAFT v0.04 ***}}
+{\small ***DRAFT v0.05 ***}}
 
 \author{Vijay Saraswat \\
 IBM T.J. Watson Research Center\\
@@ -62,6 +62,7 @@ First-order logic has crisp notions of individuation and predication: individual
 
 Recent years have seen some remarkable successes in the application of machine learning techniques to a variety of applications in speech, vision and natural language understanding. Typically, these successes are based on the use of continuous (non-convex) optimization techniques (such as gradient descent). The need to account for logical structure has led to the development of several {\em ad hoc} techniques based on embedding individuals into $n$-dimensional vectors (``distributional representations'', \cite{unified-arch-nlp,mikolov-word-vec,baroni2014don}), and treating predicates as tensors \cite{coecke-2010,grefenstette-2013,socher-ntn-2013,bishan-iclr15,rocktaschel-2015,order-embedding-kiros,TransIE}, without a proper understanding of how these techniques relate to logic. 
 
+%% TODO: 1-Lipschitz vs continuous.
 In these notes we give an account of a precise embedding of first-order logic (over finitary structures) into vector spaces over $\Re$, via the ``Fourier expansion'' of Boolean functions as multilinear polynomials. This immediately permits a continuous embedding of predicates into $[0,1]^n \rightarrow [0,1]$ that enables techniques such as gradient descent to be used directly on such formulas.
 
 %\keywords{machine learning, concurrent constraint programming}
@@ -89,6 +90,7 @@ What has made the machine learning problem of great interest in recent years is 
 \subsection{Differentiable programming languages}
 A significant drawback of deep neural networks is their {\em   opacity}. In general, it is not possible to give a meaningful answer to the question of {\em why} the learnt program does what it does. At hand is simply the value of the (potentially billions of) parameters, poor material from which to construct causally coherent explanations accessible to a human observer.
 
+
 We are interested in developing the foundations of a powerful framework for machine learning and reasoning which gives the programmer flexibility in expressing significant amount of prior knowledge in the struture of the space $\cal F$. We wish to use the full power of a general-purpose programming framework, allied with machine learning. Conceptually, the programmer may write programs in a high-level language while leaving ``holes'' (also called {\em   sketches}, \cite{solar-lezama:asplos06}) to be filled in by an appropriate automated assistant, such as a supervised machine learning algorithm, or a constraint solver. For instance, a program may leave the definition of a procedure {\em q?} unspecified, merely leaving in place an invocation of the procedure on particular arguments (e.g.{} {\em q?(X,3,true)}). The task of the solver is to determine the definition of the procedure so that the overall program exhibits the desired observations (approximately).   
 
 While considerable progress has been made in the last decade on the use of constraint solvers for sketching (see, e.g., \cite{armando}), the use of machine learning for sketching is an unexplored area. In particular, it calls for developing a ``differentiable'' programming language in which programs are embedded in a continuous space, may have user-specified parameters, and are end-to-end differentiable with respect to these parameters.  
@@ -97,6 +99,17 @@ Of particular interest to us are programming languages based on logic -- such as
 
 The focus of this note is to establish the foundations for a continuous embedding of logic. Future version of this note / subsequent papers will develop machine learning applications and implementations. 
 
+\subsection{Related work}
+
+%% Also describe recent general end-to-end differentiable approaches. Neural Turing Machines.
+
+%% Work on open IE and matrix completion as a way of learning new predicates.
+
+%% Work by Bishan Yang, and Rajarshi Das and others on doing inference in knowledge graph through neural network techniques.
+
+%% Work on Neural Theorem Proving
+
+%% Work by Grefenstette and Cock on using tensors for first order formulas.
 \section{Basic Idea}
 We develop a continuous embedding for first-order logic, building on the ideas of \cite{boolean-function}. Let us quickly sketch the construction.
 
@@ -129,15 +142,18 @@ $1$ if $a$ equals $x$ and $0$ otherwise, is just $\_=\_$.
 \subsubsection{Representing the domain of discourse}
 For now we shall consider only finite domains (the finiteness assumption of the underlying domain is standard practice in machine learning).
 
-We shall now make an assumption fundamental to this vector space approach to logic: individuals can be associated with vectors over \(B^n\). That is, we assume that the space of individuals carries ``internal'' structure: an individual is, intrinsically, a linear combination of \(n\) unit vectors in some space, and the predicates of interest to us respect this linear structure. Note that the ``classical'' domain of discourse for logic -- consisting of a set of \(n\) individuals with no ``internal'' connection to each other than -- can be accommodated in the current setting by considering a space with \(n\) dimensions, and associating each individual with a unit vector along a given dimension. Thus the individuals are ``linearly independent'' of each other (orthogonal). This use of ``one-hot'' representations comes at a price -- $n$ bits are used to represent a set of size \(n\), rather than a set of size \(2^n\). %\footnote{Of course, a ``sparse'' representation of the vector could be used, each vector being represented by the index of the unique element that is \(1\) -- this is a representation of size \(\log_2(n)\).} 
+We shall now make an assumption fundamental to this vector space approach to logic: individuals can be associated with vectors over \(B^n\). That is, we assume that the space of individuals carries ``internal'' structure: an individual is, intrinsically, a linear combination of \(n\) unit vectors in some space, and the predicates of interest to us respect this linear structure. Note that the ``classical'' domain of discourse for logic -- consisting of a set of \(n\) individuals with no ``internal'' connection to each other -- can be accommodated in the current setting by considering a space with \(n\) dimensions, and associating each individual with a unit vector along a given dimension. Thus the individuals are ``linearly independent'' of each other (orthogonal). This use of ``one-hot'' representations comes at a price -- $n$ bits are used to represent a set of size \(n\), rather than a set of size \(2^n\). %\footnote{Of course, a ``sparse'' representation of the vector could be used, each vector being represented by the index of the unique element that is \(1\) -- this is a representation of size \(\log_2(n)\).} 
 
-The justification for such an assumption  comes from the ``associational'' theories of Robert Firth (``you shall know the meaning of words by the company they keep''), \cite{firth-57}. In natural language processing, such a ``vector representation'' of words (including words such as {\sc London} and {\sc Paris} has met with some success.  Various mechanisms have been devised (e.g.{} \cite{word-to-vec}) using associational techniques to associate dense vectors with objects. Determining the dimensionality of this vector space now becomes a critical task in this approach to knowledge representation. Empirically, \(n=300\) and \(n=600\) have been used; likely these numbers are low for general knowledge representation tasks. 
+The justification for such an assumption  comes from the ``associational'' theories of Robert Firth (``you shall know the meaning of words by the company they keep''), \cite{firth-57}. In natural language processing, such a ``vector representation'' of words (including words such as {\sc London} and {\sc Paris}) has met with some success.  Various mechanisms have been devised (e.g.{} \cite{word-to-vec}) using associational techniques to associate dense vectors with objects. Determining the dimensionality of this vector space now becomes a critical task in this approach to knowledge representation. Empirically, \(n=300\) and \(n=600\) have been used; likely these numbers are low for general knowledge representation tasks. 
 
 %We shall assume an external mechanism has been used to identify the individuals in the domain of interest to us (e.g.{} the characters in some novel), based on empirically available data. Further, this may have been done using ``distributional'' techniques, so that the individuals are in fact represented as (dense) vectors in some high dimensional space $U$ \cite{word-to-vec}. This linear representation automatically comes with a ``built-in'' similarity relation $\sim$ (the cosine distance between the vectors). The value of $n$ will depend on the amount of data available and the number of individuals; $n=300$ and $n=600$ have been used to create vectors for words in various corpora. Determining the right value of \(n\) is a critical task in this approach to knowledge representation.
 
 
 We can extend the technique of indicator functions discussed above to $n$-vectors. By $\Ind_a(x)$ (for $a,x$ $n$-vectors over \(B\)) we will mean \(\Pi_{i   \in 1\ldots n} \Ind_{a_i}(x_i)\).  Therefore, any function \(f:B^n \rightarrow \Re\) can be represented as a multilinear polynomial (its ``Fourier expansion'') \cite{boolean-function}: 
-\[\Sigma_{a \in \{0,1\}^n} f(a)\Ind_{a}(x)\]
+\begin{equation}\label{eqn:fourier-expansion}
+\Sigma_{a \in \{0,1\}^n} f(a)\Ind_{a}(x)
+\end{equation}
+
 
 Alternatively, we can use a different basis, the monomials \cite{PB-optimization}. Every
 function $f:\{0,1\}^n \rightarrow \Re$ can be uniquely represented as a multilinear polynomial: 
@@ -166,10 +182,10 @@ A $k$-ary function $f:U^k \rightarrow U$ is represented by $n$ polynomials, one 
 
 The Boolean operations are defined as in Section~\ref{section:prop-logic}. Since the domain is finite, existential quantification is represented by a finite disjunction, and universal quantification by a finite conjunction. 
 
-Thus any first-order formula (with equality) in a logical vocabulary \({\cal L}\) can be represented as multilinear polynomial over \(B\). 
+Thus, any first-order formula (with equality) in a logical vocabulary \({\cal L}\) can be represented as multilinear polynomial over \(B\). 
 
 \subsection{Tensor representation}
-A multilinear function $U^k \rightarrow \Re$ can be represented directly as a tensor $T^k(U)$ \cite[Chapter 8]{lee-book-2000}. The tensor maps a tuple \tuple{u_1,\ldots, u_k} to $1$ if the tuple is in the relation and to $0$ otherwise. Function application is implemented through tensor contraction. Note that in practice such a tensor is implemented extensionally merely as a \(k\)-dimensional array with \(n\) elements in each dimension (thus requiring \(n^k\) numbers). 
+A multilinear function $U^k \rightarrow \Re$ can be represented directly as a (covariant) tensor $T^k(U)$ \cite[Chapter 8]{lee-book-2000}. The tensor maps a tuple \tuple{u_1,\ldots, u_k} to $1$ if the tuple is in the relation and to $0$ otherwise. Function application is implemented through tensor contraction. Note that in practice such a tensor is implemented extensionally merely as a \(k\)-dimensional array with \(n\) elements in each dimension (thus requiring \(n^k\) numbers). 
 
 A similar observation is made in \cite{grefenstette-2013} (though the underlying connection with multilinear polynomials is not).
 
@@ -266,6 +282,8 @@ In essence, we can use the theory presented in this paper to address the problem
 
 \section{Work to do}
 
+How does one deal with infinite domains?
+
 {\em How does one deal with infinite domains? Does one need to? Do the
 usual machine learning algorithms make sense over infinite domains?
 The representations are all in terms of finite vectors/ matrices /
@@ -294,6 +312,7 @@ way to introduce quantifiers.}
 \bibliography{master}
 
 \appendix
+\newpage
 
 \section{Clausal form and logic programming}
 \subsubsection{Clausal representation}
@@ -318,128 +337,19 @@ Now we can see how unit resolution works.  Given $a=1$, unit resolution reduces 
 More generally, one can think of definite clause programming thus. We are given a theory $\Sigma=\{(1-\phi_1),\ldots, (1-\phi_n)\}$, where each formula $1-\phi_i$ represents a definite clause.  
 Let us say that a {\em valuation} is a function from the set of variables to $\{0,1\}$. A {\em solution} of $\Sigma$ assigns $1$ to each formula $1-\phi_i$ in $\Sigma$, i.e.{} assigns zero to each $\phi_i$. 
 
-Now we are given a query $q=a_1 \And \ldots \And a_k$ and asked to establish $\Sigma \vdash q$. That is, every solution for $\Sigma$ must assign $1$ to each $a_j, j\in 1\ldots k$. Backward chaining consists of finding some clause $b_1,\ldots, b_m\Arrow a_j$, for some $j\in 1\ldots k$ and replacing the query $q$ with $a_1\And \ldots \And a_{j-1} \And b_1 \And \ldots b_m \And \ldots \And a_k$. (Note that $m$ could be zero, thus decreasing the size of the resulting query. This process is repeated until the size of the final query is $0$.)
+Now we are given a query $q=a_1 \And \ldots \And a_k$ and asked to establish $\Sigma \vdash q$. That is, every solution for $\Sigma$ must assign $1$ to each $a_j, j\in 1\ldots k$. Backward chaining consists of finding some clause $b_1,\ldots, b_m\Arrow a_j$, for some $j\in 1\ldots k$ and replacing the query $q$ with $a_1\And \ldots \And a_{j-1} \And b_1 \And \ldots b_m \And \ldots \And a_k$. (Note that $m$ could be zero, thus decreasing the size of the resulting query.) This process is repeated until the size of the final query is $0$.
 
 Why is this sound? Because every solution $v$ that assigns $0$ to $b_1\mtimes \ldots \mtimes b_j\mtimes (1-a_j)$ and $1$ to 
 $a_1\mtimes \ldots \mtimes a_{j_1}\mtimes b_1 \mtimes \ldots \mtimes b_m \mtimes a_{j+1}\mtimes \ldots \mtimes a_k$ can only do so by 
 assigning $1$ to $b_1, \ldots, b_m$ {\em and} $1$ to $a_j$, and $1$ to $a_1,\ldots, a_{j-1},a_{j+1},\ldots a_k$. Therefore it assigns $1$ to $a_1 \mtimes \ldots \mtimes a_k$. 
 
 \paragraph{Posiform.}
+%% TODO: Have not introduced pseudo-Boolean yet. Why is this important to say. What does ``many ways'' mean?
 Let $\bar{x}$ stand for $(1-x)$. Every pseudo-Boolean function can also be represented in many ways through ``clausal decompositions'', called {\em posiforms}:
 \begin{equation}
   f(x_1,\ldots, x_n)=b_0 + \Sigma_{k \in 1\ldots m} b_k (\Pi_{i\in A_k} x_i \Pi_{j\in B_k}(\bar{x_j}))
 \end{equation}
 \noindent where $b_k\geq 0$ for $k \in 1\ldots m$. 
 
-\section{Brief primer on tensors}\label{sec:tensor}
-The material here is based on \cite{lee-book-2000,dullemond-1991-tensor}.
-
-
-Let \(V\) be an \(n\)-dimensional vector space over the reals. A {\em covector} on \(V\) is a real-valued linear functional \(\omega:V\rightarrow \Re\). The space of all covectors is itself a real vector space  under pointwise addition and multiplication. It is written as \(V^{\star}\) and called the {\em dual space} to \(V\). 
-
-\begin{proposition}[\cite{lee-book-2000} Proposition 4.1] For \(V\) an \(n\)-dimensional vector space and \(E_1, \ldots, E_n\) a basis for \(V\), the covectors \(\epsilon^1, \ldots, \epsilon^n\), defined by:
-  \[
-  \epsilon^i(E_j) = \delta^i_j = \left\{
-  \begin{array}{l}
-    1\, \mbox{if \(i =j\)} \\
-    0\, \mbox{if \(i\not=j\)}
-    \end{array}\right.
-    \]
-\noindent form a basis for \(V^{\star}\), called the {\em dual basis} to \((E_i)\).   
-\end{proposition}
-Note that it follows that the dimensionality of \(V^{\star}\) is the same as that of \(V\).
-
-In the following we shall adopt the {\em Einstein summation convention}:
-\begin{quotation}
-  If the same index name appears twice in any term, once as an upper index and once as a lower index, that term is understood to be summed over all possible values of that index, generally from \(1\) to the dimension of the space in question. 
-\end{quotation}
-Thus for instance we can rewrite:
-\[
-\begin{array}{lcl}
-  \Sigma_{\nu=1}^n A_{\mu\nu}v_{\nu} & \rightarrow &   A_{\mu\nu}v_{\nu}\\
-  \Sigma_{\beta=1}^n \Sigma_{\gamma=1}^n A _{\alpha \beta}B_{\beta \gamma}C_{\gamma \delta} & \rightarrow & A_{\alpha \beta}B_{\beta \gamma}C_{\gamma \delta}
-\end{array}
-\]
-This convention is fundamental to working with tensors. It provides a handy notation for tensor contraction, the central operation on tensors.
-
-Generally, basis vectors will be written with a lower index, and components of a vector with respect to this basis with an upper index.
-
-\begin{definition}[(Covariant) Tensor] For $V$ a finite-dimensional real vector space, a {\em covariant tensor} of rank $k$ over $V$ is a real-valued multilinear function of $k$ elements of $V$.
-\end{definition}
-
-By convention, a $0$-tensor is just a real number. Define $T^k(V)$ to be the set of all tensors of rank $k$ over $V$. $T^k(V)$ is a vector space under point-wise addition and scalar multiplication. Specifically:
-\[
-\begin{array}{l}
-  (\alpha T)(X_1, \ldots, X_k) = \alpha(T(X_1, \ldots, X_k))\\
-  (S+T)(X_1, \ldots, X_k)=S(X_1, \ldots, X_K) + T(X_1, \ldots, X_k)
-\end{array}
-\]
-
-Given two tensors \(S \in T^k(V), T \in T^l(V)\) (for \(V\) a finite-dimensional real vector space), the map:
-\[ S \otimes T \defeq \lambda X_1, \ldots, X_{k+l}.S(X_1,\ldots, X_k)T(X_{k+1}, \ldots, X_{k+l})\]
-\noindent is a covariant \((k+l)\)-tensor, called the {\em tensor product} of \(S\) and \(T\). More generally, given any two vector spaces \(A,B\), a canonical tensor product \(A\otimes B\) can be defined on them \cite[P.~175]{lee-book-2000}. it consists of linear combinations of objects of the form \(a\otimes b\) for \(a\in A, b\in B\) which is defined in such a way that \(a\otimes b\) depends bilinearly on \(a\) and \(b\). 
-
-\begin{proposition}[\cite{lee-book-2000}, Proposition 8.2] Let \(V\) be an \(n\)-dimensional vector space with basis \((E_i)\), and let \(V^{\star}\) have basis \(\epsilon^i\). The set of all \(k\)-tensors of the form \(\epsilon^{i_1}\otimes \ldots \otimes\epsilon^{i_k}\) for \(1 \leq i_1, \ldots, i_k \leq n\) is a basis for \(T^k(V)\).
-\end{proposition}
-
-Thus the dimension of \(T^k(V)\) is \(n^k\). We can represent such a tensor extensionally, with a value $r\in \Re$ for each of the \(n^k\) basis vectors \(\epsilon_{i_1} \otimes \ldots \otimes \epsilon_{i_k}\), for \(1 \leq i_1, \ldots, i_k \leq n\). Note while it is tempting to consider such a collection of numbers as a \(k\)-dimensional array of numbers, care must be taken because the operation to be performed on this array are described by tensor contraction rather than matrix multiplication, as we shall see below. 
-
-%The output of the tensor for any value \(v_1\otimes \ldots \otimes v_k\) is obtained by an appropriate linear combination of the values on the basis vectors.
-
-More abstractly:
-\begin{proposition}[\cite{lee-book-2000}, Corollary 8.5]\label{prop:tensors-are-tensor-products} For \(V\) an \(n\)-dimensional real vector space, the space \(T^k(V)\) of covariant \(k\)-tensors on \(V\) is canonically isomorphic to the \(k\)-fold tensor product \(V^{\star}\otimes \ldots \otimes V^{\star}\). 
-\end{proposition}
-
-This permits us to generalize the notion of tensors to {\em mixed rank} tensors. For \(V\) an \(n\)-dimensional vector space, the space of {\em contravariant tensors} of rank \(k\) is defined to be:
-\[
-T_k(V) = V \otimes \ldots \otimes V \]
-(with \(k\) copies). Because of the isomorphism between \(V\) and \(V^{\star\star}\), and Proposition~\ref{prop:tensors-are-tensor-products}, an element of \(T_k(V)\) can be identified with a multilinear function in \(V^{\star} \times \ldots \times V^{\star} \rightarrow \Re$. This allows us to define, for any \(k, l \in \mathbb{N}\) the space of {\em mixed tensors} as:
-\[T^k_l(V) = V^{\star}\otimes \ldots V^{\star}\otimes V\otimes \ldots \otimes V\]
-\noindent where the first product is taken \(k\) times and the second \(l\) times.  Thus \(T^k_l(V)\) is the space of real-valued multilinear functions of \(k\) vectors and \(l\) covectors. 
-
-\subsection{Working with tensors}
-  
-Tensors can be ``partially'' evaluated. For \(T\) a tensor of rank \(k\) representing a predicate \(p\), and \(a\) a vector representing the value of argument \(i\), \(T^{1\ldots k}a_i\) represents the predicate \(\lambda x_1, \ldots, x_{i-1},x_{i+1},\ldots x_k. p(x_1, \ldots, x_{i-1}, a, x_{i+1}, \ldots, x_k)\). It can be thought of as {\em contracting} \(T\) and \(a\) on index \(i\).
-  
-
-\begin{example}\label{ex:tc-1}
-  Consider the tensor representation of the boolean polynomial \(p(x,y) = x(1-y)\). Because \(x,y\in \{0,1\}\) with the two values independent of each other, we will embed them in the two dimensional vector space \(U=\{0,1\}^2\), with ``one hot'' basis vectors \(\epsilon_1=(1,0)\) and \(\epsilon_2=(0,1)\) representing \(0\) and \(1\) respectively. Now the tensor \(T^{1,2}\) representing the binary predicate \(\lambda x,y. p(x,y)\) is represented by the table:
-  \[
-  \begin{array}{l}
-    T(\epsilon_1,\epsilon_1)=0\\
-    T(\epsilon_1,\epsilon_2)=0\\
-    T(\epsilon_2,\epsilon_1)=1\\
-    T(\epsilon_2,\epsilon_2)=0
-  \end{array}
-  \]
-  We can use this representation to evaluate the predicate at different points through tensor contraction. For instance, \(p(0,1)\) is given, for \(a=\epsilon_1,b=\epsilon_2\) by \(T^{1,2}a_1 b_2\), which through the Einstein convention expands out to:\footnote{Recall that for \(x\) a vector \(x^j\) represents its \(j\)th coordinate.}
-  \[\begin{array}{ll}
-  T^{1,2}a_1 b_2 &= \Sigma_{j=1}^2 \Sigma_{i=1}^2 T(\epsilon_i,\epsilon_j)a_1^ib_2^j \\
-  &= T(\epsilon_1,\epsilon_1)*1*0 + T(\epsilon_1,\epsilon_2)*1*1 +
-  T(\epsilon_2,\epsilon_1)*0*0 + T(\epsilon_2,\epsilon_2)*0*1 \\
-  & =T(\epsilon_1,\epsilon_2)\\
-  & = 0
-  \end{array}
-  \]
-\end{example}
-
-More generally, we can compute tensor contraction symbolically. Let \(x,y\) be  unknown vectors in \(U\), and let \(S\) be a rank-2 tensor over \(U\). Then if \(S\) represents the predicate \(q\), the predication \(q(x,y)\) is represented by \(S^{1,2}x_1 y_2\) which expands out to:
-\[\begin{array}{ll}
-  [S(x,y)]&\defeq  S^{1,2}x_1 y_2\\
-  & = \Sigma_{j=1}^2 \Sigma_{i=1}^2 S(\epsilon_i,\epsilon_j)x_1^iy_2^j \\
-  & =S(\epsilon_1,\epsilon_1)x^1y^1 + S(\epsilon_1,\epsilon_2)x^1y^2 +
-      S(\epsilon_2,\epsilon_1)x^2y^1 + S(\epsilon_2,\epsilon_2)x^2y^2 \\
-  \end{array}
-  \]
-
-  \begin{example}[Example~\ref{ex:tc-1} contd]
-    Taking the value of \(S\) above to be \(T\), we get:
-    \[\begin{array}{ll}    
-        [T(x,y)] & = x^2y^1\\
-         & = [x=1][y=0]
-    \end{array}
-    \]
-  \end{example}
-
-The representation of an arbitrary $k$-are predicate is similar, a tensor \(T^k\) represented by \(n^k\) numbers, for \(U=\{0,1\}^n\). 
+\input{appendix-tensor-3}
 \end{document}

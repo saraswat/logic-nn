@@ -1,0 +1,125 @@
+\section{Brief primer on tensors}\label{sec:tensor}
+The material here is based on \cite{lee-book-2000,dullemond-1991-tensor}.
+
+
+Let \(V\) be an \(n\)-dimensional vector space over the reals. A {\em covector} on \(V\) is a real-valued linear functional \(\omega:V\rightarrow \Re\). The space of all covectors is itself a real vector space  under pointwise addition and multiplication. It is written as \(V^{\star}\) and called the {\em dual space} to \(V\). 
+
+\begin{proposition}[\cite{lee-book-2000} Proposition 4.1] For \(V\) an \(n\)-dimensional vector space and \(E_1, \ldots, E_n\) a basis for \(V\), the covectors \(\epsilon^1, \ldots, \epsilon^n\), defined by:
+  \[
+  \epsilon^i(E_j) = \delta^i_j = \left\{
+  \begin{array}{ll}
+    1 & \mbox{if \(i =j\)} \\
+    0 & \mbox{if \(i\not=j\)}
+    \end{array}\right.
+    \]
+\noindent form a basis for \(V^{\star}\), called the {\em dual basis} to \((E_i)\).   
+\end{proposition}
+%% TODO: Define canonical isomorphism.
+Note that it follows that the dimensionality of \(V^{\star}\) is the same as that of \(V\). It is also the case that \(V^{\star\star}\) is canonically isomorphic to \(V\). 
+
+Tensors can be represented in one of three equivalent ways -- as multi-dimensional arrays that are invariant under basis change, as multilinear functions of \(V\) and \(V^{\star}\) and as elements of tensor products of \(V\) and \(V^{\star}\). Here we choose the last alternative. 
+
+\begin{definition}[Tensor] For $V$ a finite-dimensional real vector space, a {\em tensor} of rank \((k,l)\) over $V$ is an element of the tensor space \(V\otimes \ldots \otimes V \otimes V^{\star}\otimes \ldots \otimes V^{\star}\) where the first product has \(k\) elements and the second \(l\). \(k\) is said to be its {\em contravariant} rank, and \(l\) its {\em covariant} rank. The {\em rank} of the tensor is \(k+l\).
+\end{definition}
+Denote the set of all \((k,l)\)-tensors over \(V\) by \(T^k_l\).
+$T^k_l(V)$ is a vector space under point-wise addition and scalar multiplication. Specifically:
+\[
+\begin{array}{l}
+  (\alpha T)(X_1, \ldots, X_k, Y_1, \ldots, Y_l) = \alpha(T(X_1, \ldots, X_k, Y_1, \ldots, Y_l))\\
+  (S+T)(X_1, \ldots, X_k, Y_1, \ldots, Y_l)=S(X_1, \ldots, X_K, Y_1, \ldots, Y_k) + T(X_1, \ldots, X_k, Y_1, \ldots, Y_l)
+\end{array}
+\]
+Note that a matrix \(M\) is a \((1,1)\)-tensor, a vector \(x\) a \((1,0)\)-tensor, and a covector \{a\} a \((0,1)\)-tensor. \((k,l)\)-tensors are in a 1-1 correspondence with multilinear maps \(V^{\star}\times \ldots \times V^{\star} \times V \times \ldots \times V \rightarrow \Re\), where the first product has \(k\) elements and the second \(l\).
+
+The meaning of the indices of a tensor is usually decided beforehand; it is conventional to write a tensor with its contravariant (upper) indices first and the covariant (lower) indices last, e.g.{} \({T^{ij}}_k\). For instance, a matrix \(M\) is a \((1,1)\)-tensor, and we can write \({M^j}_i\) to make its indices explicit. This is the same as \({M^j}_k\) -- the identity of indices does not matter. Also, basis vectors will be written with a lower index, and components of a vector with respect to this basis with an upper index; similarly, basis covectors will be written with an upper index and components of a covector with a lower index. 
+
+
+In the following we shall adopt the {\em Einstein summation convention}:
+\begin{quotation}
+  If the same index name appears twice in any term, once as an upper index and once as a lower index, that term is understood to be summed over all possible values of that index, generally from \(1\) to the dimension of the space in question. If the indices belong to different tensors, their tensor product is taken first.
+\end{quotation}
+Thus for instance we can rewrite:
+\[
+\begin{array}{lcl}
+  \Sigma_{\nu=1}^n A_{\mu\nu}v^{\nu} & \rightarrow &   A_{\mu\nu}v_{\nu}\\
+  \Sigma_{\beta=1}^n \Sigma_{\gamma=1}^n A _{\alpha \beta}B^{\beta \gamma}C_{\gamma \delta} & \rightarrow & A_{\alpha \beta}B^{\beta \gamma}C_{\gamma \delta}
+\end{array}
+\]
+
+Let \(\{{\bf e}_j\}\) be a basis for \(V\), with canonical cobasis \(\{\epsilon^i\}\) for \(V^{\star}\). 
+A \((k,l)\)-tensor \(T\) can be associated with an array with \(k+l\) dimensions, whose \((i_1, \ldots, i_k, j_1, \ldots, j_l)\)'th element, written \(T^{i_1\ldots i_k}_{j_1, \ldots, j_l}\), is given by the coefficient of \(T\) for the basis element \({\bf e}_{i_1}\otimes \ldots \otimes {\bf e}_{i_k}\otimes \epsilon^{j_1}\otimes \ldots \otimes \epsilon^{j_l}\). Thus:
+\[ T = T^{i_1 \ldots i_k}_{j_1 \ldots j_l} {\bf e}_{i_1}\otimes \ldots \otimes {\bf e}_{i_k}\otimes \epsilon^{j_1}\otimes \ldots \otimes \epsilon^{j_l}
+\]
+
+
+
+\subsection{Tensor Contraction}\label{sec:summation-convention}
+
+
+The {\em contraction} of a tensor is obtained by setting one upper and one lower index equal, thus indicating a summation per the convention above. The result of contracting a \((k,l)\)-tensor  is a \((k-1,l-1)\) tensor.
+
+The contraction operation is invariant under coordinate changes.
+
+
+\subsection{Working with tensors}
+  
+Tensors can be ``partially'' evaluated. For \(T\) a tensor of rank \(k\) representing a predicate \(p\), and \(a\) a vector representing the value of argument \(i\), \(T_{1\ldots k}a^i\) represents the predicate \(\lambda x_1, \ldots, x_{i-1},x_{i+1},\ldots x_k. p(x_1, \ldots, x_{i-1}, a, x_{i+1}, \ldots, x_k)\). It can be thought of as {\em contracting} \(T\) and \(a\) on index \(i\).
+  
+
+\begin{example}\label{ex:tc-1}
+  Consider the tensor representation of the boolean polynomial \(p(x,y) = x(1-y)\). Because \(x,y\in \{0,1\}\) with the two values independent of each other, we will embed them in the two dimensional vector space \(U=\{0,1\}^2\), with ``one hot'' basis vectors \({\bf e}_1=(1,0)\) and \({\bf e}_2=(0,1)\) representing \(0\) and \(1\) respectively. Now the tensor \(T_{i,j}\) representing the binary predicate \(\lambda x,y. p(x,y)\) is represented by the table:
+  \[
+  \begin{array}{lll}
+    {T_{1,1}}&=(0)(1-0)&=0\\
+    {T_{1,2}}&=(0)(1-1)&=0\\
+    {T_{2,1}}&=(1)(1-0)&=1\\
+    {T_{2,2}}&=(1)(0)&=0
+  \end{array}
+  \]
+  We can use this representation to evaluate the predicate at different points through tensor contraction. For instance, \(p(0,1)\) is given, for \(a={\bf e}_1,b={\bf e}_2\) by \(T_{i,j}a^i b^j\), which through the Einstein convention expands out to:\footnote{Recall that for a vector \(x\), \(x^k\) represents its \(k\)th coordinate. Note that
+    in the first  term \(T_{i,j}a^ib^j\) the super-scripts of \(a\) and \(b\) are formal (unbound) indices, whereas in  the second term \(T_{i,j}a^i b^j \), \(i\) and \(j\) are bound, and the super-scripts of \(a\) and \(b\) represent component selections.}
+  \[\begin{array}{ll}
+  T_{i,j}a^i b^j &= \Sigma_{j=1}^2 \Sigma_{i=1}^2 a^i b^j T_{i,j}\\
+  &= (1)(0) T_{1,1} + (1)(1) T_{1,2}
+      + (0)(0) T_{2,1} + (0)(1) T_{2,2}\\
+  & =T_{1,2}\\
+  & = 0
+  \end{array}
+  \]
+
+  Similarly, the term \(T_{i,j} a^i\) gives us a \((1,0)\) tensor \(S_j\) representing \(\lambda x.p(0,x)\):
+  \[
+  \begin{array}{l}
+    S_1 = \Sigma_{i=1}^2 a^i T_{i,1} =a^1 T_{1,1} + a^2  T_{2,1} = T_{1,1} = 0\\
+    S_2 = \Sigma_{i=1}^2 a^i T_{i,2} =a^1 T_{1,2} + a^2  T_{2,2} =  T_{1,2} = 0    
+  \end{array}\]
+
+  The term \(T_{i,j} a^j\) gives us a \((1,0)\) tensor \(R_i\) representing \(\lambda x. p(x,0)\):
+  \[\begin{array}{l}
+    R_1 = \Sigma_{i=1}^2 a^i T_{1,i} =a^1 T_{1,1} + a^2  T_{1,2} = T_{1,1} = 0\\
+    R_2 = \Sigma_{i=1}^2 a^i T_{2,i} =a^1 T_{2,1} + a^2  T_{2,2} =  T_{2,1} = 1    
+  \end{array}\]
+
+    Applying \(R_i\) to \(b\), i.e. computing \(R_ib^i\) gives \(R_1 b^1 + R_2 b^2=(0)(0) + (1)(1)=1\), whereas applying it to \(a\)  gives  \(R_1 a^1 + r_2 b^2 = (0)(1)+(0)(0) = 0\). The results in both case agree with \((\lambda x.p(x,0))(1)\).
+  
+\end{example}
+
+More generally, we can compute tensor contraction symbolically. Let \(x,y\) be  unknown vectors in \(U\), and let \(S\) be a rank-2 tensor over \(U\). Then if \(S\) represents the predicate \(q\), the predication \(q(x,y)\) is represented by \(S_{i,j}x^i y^j\) which expands out to:
+\[\begin{array}{ll}
+  [S(x,y)]&\defeq  S_{i,j}x^i y^j\\
+  & = \Sigma_{j=1}^2 \Sigma_{i=1}^2 x^i y^j [S_{i,j}] \\
+  & =   x^1 y^1  [S_{1,1}] + x^1 y^2 [S_{1,2}]
+      + x^2 y^1 [S_{2,1}]  + x^2 y^2 [S_{2,2}]
+  \end{array}
+\]
+
+\begin{example}[Example~\ref{ex:tc-1} contd]
+  Taking the value of \(S\) above to be \(T\), we get:
+  \[\begin{array}{ll}    
+      [T(x,y)] & = x^2y^1\\
+      & = [x=1][y=0]
+  \end{array}
+  \]
+\end{example}
+
+The representation of an arbitrary $k$-are predicate is similar, a tensor \(T_k\) represented by \(n^k\) numbers, for \(U=\{0,1\}^n\). 

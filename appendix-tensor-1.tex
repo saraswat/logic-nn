@@ -1,0 +1,119 @@
+\section{Brief primer on tensors}\label{sec:tensor}
+The material here is based on \cite{lee-book-2000,dullemond-1991-tensor}.
+
+
+Let \(V\) be an \(n\)-dimensional vector space over the reals. A {\em covector} on \(V\) is a real-valued linear functional \(\omega:V\rightarrow \Re\). The space of all covectors is itself a real vector space  under pointwise addition and multiplication. It is written as \(V^{\star}\) and called the {\em dual space} to \(V\). 
+
+\begin{proposition}[\cite{lee-book-2000} Proposition 4.1] For \(V\) an \(n\)-dimensional vector space and \(E_1, \ldots, E_n\) a basis for \(V\), the covectors \(\epsilon^1, \ldots, \epsilon^n\), defined by:
+  \[
+  \epsilon^i(E_j) = \delta^i_j = \left\{
+  \begin{array}{ll}
+    1 & \mbox{if \(i =j\)} \\
+    0 & \mbox{if \(i\not=j\)}
+    \end{array}\right.
+    \]
+\noindent form a basis for \(V^{\star}\), called the {\em dual basis} to \((E_i)\).   
+\end{proposition}
+%% TODO: Define canonical isomorphism.
+Note that it follows that the dimensionality of \(V^{\star}\) is the same as that of \(V\). It is also the case that \(V^{\star\star}\) is canonically isomorphic to \(V\). 
+
+
+\begin{definition}[(Covariant) Tensor] For $V$ a finite-dimensional real vector space, a {\em covariant tensor} of rank $k$ over $V$ is a real-valued multilinear function of $k$ elements of $V$.
+\end{definition}
+
+By convention, a $0$-tensor is just a real number. Define $T^k(V)$ to be the set of all tensors of rank $k$ over $V$. $T^k(V)$ is a vector space under point-wise addition and scalar multiplication. Specifically:
+\[
+\begin{array}{l}
+  (\alpha T)(X_1, \ldots, X_k) = \alpha(T(X_1, \ldots, X_k))\\
+  (S+T)(X_1, \ldots, X_k)=S(X_1, \ldots, X_K) + T(X_1, \ldots, X_k)
+\end{array}
+\]
+
+Given two tensors \(S \in T^k(V), T \in T^l(V)\) (for \(V\) a finite-dimensional real vector space), the map:
+\[ S \otimes T \defeq \lambda X_1, \ldots, X_{k+l}.S(X_1,\ldots, X_k)T(X_{k+1}, \ldots, X_{k+l})\]
+\noindent is a covariant \((k+l)\)-tensor, called the {\em tensor product} of \(S\) and \(T\). More generally, given any two vector spaces \(A,B\), a canonical tensor product \(A\otimes B\) can be defined on them \cite[P.~175]{lee-book-2000}. it consists of linear combinations of objects of the form \(a\otimes b\) for \(a\in A, b\in B\) which is defined in such a way that \(a\otimes b\) depends bilinearly on \(a\) and \(b\). 
+
+\begin{proposition}[\cite{lee-book-2000}, Proposition 8.2] Let \(V\) be an \(n\)-dimensional vector space with basis \((E_i)\), and let \(V^{\star}\) have basis \(\epsilon^i\). The set of all \(k\)-tensors of the form \(\epsilon^{i_1}\otimes \ldots \otimes\epsilon^{i_k}\) for \(1 \leq i_1, \ldots, i_k \leq n\) is a basis for \(T^k(V)\).
+\end{proposition}
+
+Thus the dimension of \(T^k(V)\) is \(n^k\). We can represent such a tensor extensionally, with a value $r\in \Re$ for each of the \(n^k\) basis vectors \(\epsilon_{i_1} \otimes \ldots \otimes \epsilon_{i_k}\), for \(1 \leq i_1, \ldots, i_k \leq n\). Note while it is tempting to consider such a collection of numbers as a \(k\)-dimensional array of numbers, care must be taken because the operation to be performed on this array are described by tensor contraction rather than matrix multiplication, as we shall see below. 
+
+%The output of the tensor for any value \(v_1\otimes \ldots \otimes v_k\) is obtained by an appropriate linear combination of the values on the basis vectors.
+
+More abstractly:
+\begin{proposition}[\cite{lee-book-2000}, Corollary 8.5]\label{prop:tensors-are-tensor-products} For \(V\) an \(n\)-dimensional real vector space, the space \(T^k(V)\) of covariant \(k\)-tensors on \(V\) is canonically isomorphic to the \(k\)-fold tensor product \(V^{\star}\otimes \ldots \otimes V^{\star}\). 
+\end{proposition}
+
+%%If the transformation matrix of an index is the inverse matrix of the basis transformation, then the index is called contravariant and is traditionally denoted with an upper index (superscript). If the transformation matrix of an index is the basis transformation itself, then the index is called covariant and is denoted with a lower index (subscript).
+
+This permits us to generalize the notion of tensors to {\em mixed rank} tensors. For \(V\) an \(n\)-dimensional vector space, the space of {\em contravariant tensors} of rank \(k\) is defined to be:
+\[
+T_k(V) = V \otimes \ldots \otimes V \]
+(with \(k\) copies). Because of the isomorphism between \(V\) and \(V^{\star\star}\), and Proposition~\ref{prop:tensors-are-tensor-products}, an element of \(T_k(V)\) can be identified with a multilinear function in \(V^{\star} \times \ldots \times V^{\star} \rightarrow \Re$. This allows us to define, for any \(k, l \in \mathbb{N}\) the space of {\em mixed tensors} as:
+\[T^k_l(V) = V^{\star}\otimes \ldots V^{\star}\otimes V\otimes \ldots \otimes V\]
+\noindent where the first product is taken \(k\) times and the second \(l\) times.  Thus \(T^k_l(V)\), the space of \((k,l)\)-tensors, is the space of real-valued multilinear functions of \(k\) vectors and \(l\) covectors. 
+
+Mixed-mode tensors  are written with upper indices for its contra-variant dimensions, and lower indices for its covariant dimensions. For instance, a matrix \(M\) is a \((1,1)\)-tensor, and we can write \(M_i^j\) to make its indices explicit. This is the same as \(M_j^k\) -- the identity of indices does not matter. Also, basis vectors will be written with a lower index, and components of a vector with respect to this basis with an upper index.
+\subsection{Tensor Contraction}\label{sec:summation-convention}
+In the following we shall adopt the {\em Einstein summation convention}:
+\begin{quotation}
+  If the same index name appears twice in any term, once as an upper index and once as a lower index, that term is understood to be summed over all possible values of that index, generally from \(1\) to the dimension of the space in question. 
+\end{quotation}
+Thus for instance we can rewrite:
+\[
+\begin{array}{lcl}
+  \Sigma_{\nu=1}^n A_{\mu\nu}v_{\nu} & \rightarrow &   A_{\mu\nu}v_{\nu}\\
+  \Sigma_{\beta=1}^n \Sigma_{\gamma=1}^n A _{\alpha \beta}B_{\beta \gamma}C_{\gamma \delta} & \rightarrow & A_{\alpha \beta}B_{\beta \gamma}C_{\gamma \delta}
+\end{array}
+\]
+
+The {\em contraction} of a tensor is obtained by setting unlike indices equal, thus indicating a summation per the convention above. The result of contracting a \((k,l)\)-tensor  is a \((k-1,l-1)\) tensor.
+
+The contraction operation is invariant under coordinate changes.
+
+
+\subsection{Working with tensors}
+  
+Tensors can be ``partially'' evaluated. For \(T\) a tensor of rank \(k\) representing a predicate \(p\), and \(a\) a vector representing the value of argument \(i\), \(T^{1\ldots k}a_i\) represents the predicate \(\lambda x_1, \ldots, x_{i-1},x_{i+1},\ldots x_k. p(x_1, \ldots, x_{i-1}, a, x_{i+1}, \ldots, x_k)\). It can be thought of as {\em contracting} \(T\) and \(a\) on index \(i\).
+  
+
+\begin{example}\label{ex:tc-1}
+  Consider the tensor representation of the boolean polynomial \(p(x,y) = x(1-y)\). Because \(x,y\in \{0,1\}\) with the two values independent of each other, we will embed them in the two dimensional vector space \(U=\{0,1\}^2\), with ``one hot'' basis vectors \(\epsilon_1=(1,0)\) and \(\epsilon_2=(0,1)\) representing \(0\) and \(1\) respectively. Now the tensor \(T^{1,2}\) representing the binary predicate \(\lambda x,y. p(x,y)\) is represented by the table:
+  \[
+  \begin{array}{l}
+    T(\epsilon_1,\epsilon_1)=0\\
+    T(\epsilon_1,\epsilon_2)=0\\
+    T(\epsilon_2,\epsilon_1)=1\\
+    T(\epsilon_2,\epsilon_2)=0
+  \end{array}
+  \]
+  We can use this representation to evaluate the predicate at different points through tensor contraction. For instance, \(p(0,1)\) is given, for \(a=\epsilon_1,b=\epsilon_2\) by \(T^{1,2}a_1 b_2\), which through the Einstein convention expands out to:\footnote{Recall that for \(x\) a vector \(x^j\) represents its \(j\)th coordinate.}
+  \[\begin{array}{ll}
+  T^{1,2}a_1 b_2 &= \Sigma_{j=1}^2 \Sigma_{i=1}^2 T(\epsilon_i,\epsilon_j)a_1^ib_2^j \\
+  &= T(\epsilon_1,\epsilon_1)*1*0 + T(\epsilon_1,\epsilon_2)*1*1 +
+  T(\epsilon_2,\epsilon_1)*0*0 + T(\epsilon_2,\epsilon_2)*0*1 \\
+  & =T(\epsilon_1,\epsilon_2)\\
+  & = 0
+  \end{array}
+  \]
+\end{example}
+
+More generally, we can compute tensor contraction symbolically. Let \(x,y\) be  unknown vectors in \(U\), and let \(S\) be a rank-2 tensor over \(U\). Then if \(S\) represents the predicate \(q\), the predication \(q(x,y)\) is represented by \(S^{1,2}x_1 y_2\) which expands out to:
+\[\begin{array}{ll}
+  [S(x,y)]&\defeq  S^{1,2}x_1 y_2\\
+  & = \Sigma_{j=1}^2 \Sigma_{i=1}^2 S(\epsilon_i,\epsilon_j)x_1^iy_2^j \\
+  & =S(\epsilon_1,\epsilon_1)x^1y^1 + S(\epsilon_1,\epsilon_2)x^1y^2 +
+      S(\epsilon_2,\epsilon_1)x^2y^1 + S(\epsilon_2,\epsilon_2)x^2y^2 \\
+  \end{array}
+  \]
+
+  \begin{example}[Example~\ref{ex:tc-1} contd]
+    Taking the value of \(S\) above to be \(T\), we get:
+    \[\begin{array}{ll}    
+        [T(x,y)] & = x^2y^1\\
+         & = [x=1][y=0]
+    \end{array}
+    \]
+  \end{example}
+
+The representation of an arbitrary $k$-are predicate is similar, a tensor \(T^k\) represented by \(n^k\) numbers, for \(U=\{0,1\}^n\). 
