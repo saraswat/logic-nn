@@ -1,5 +1,5 @@
 # logic-nn
-##Doing logic with neural nets.
+## Doing logic with neural nets.
 
 We want to rebuild logic on a machine learning foundation.
 
@@ -28,7 +28,7 @@ The work on LSTMs for textual entailment establishes that they can be used for s
 Can they be used for multi-step entailments, i.e. to implement reasoning, in a first order setting.
 Can we build theories into NN learners?
 
-##References
+## References
 1. [Bishan Yang's papers:](http://arxiv.org/abs/1412.6575), [more](http://arxiv.org/abs/1412.6575)
 2. [Tim's injecting paper:](http://rockt.github.io/pdf/rocktaschel2015injecting.pdf)
 
