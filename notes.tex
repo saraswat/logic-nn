@@ -10,7 +10,7 @@
 %\usepackage{url}
 \usepackage{colortbl}
 \usepackage{multirow}
-
+\usepackage{stmaryrd}
 
 %\usepackage{amssymb}
 %\newtheorem{definition}{Definition} % [section]
@@ -25,17 +25,17 @@
 
 \newcommand{\keywords}[1]{\par\addvspace\baselineskip
 \noindent\keywordname\enspace\ignorespaces#1}
-\input{../../commands.tex}
+\input{commands.tex}
 
 \begin{document}
 %\bibliographystyle{acmtrans}
 
 \long\def\comment#1{}
 \def\mtimes{}
-\def\LL#1{#1}
+\def\LL#1{\llbracket #1 \rrbracket}
 \title{Notes on differentiable logic \\
 {\small Logic through vector calculus} \\
-{\small ***DRAFT v0.05 ***}}
+{\small *** DRAFT v0.06 ***}}
 
 \author{Vijay Saraswat \\
 IBM T.J. Watson Research Center\\
@@ -127,13 +127,16 @@ Let the underlying base domain be $B$, with $0$ interpreted as false and $1$ as 
 \end{align*}
 
 The definition of the other logical operators follows:
-  \begin{align*}
-  \LL{a\Or b} &= \overline{\bar{a}\bar{b}} \\
+\begin{align*}
+  \LL{a\Or b} &= \overline{\bar{a}\bar{b}} = a+b(1-a)=a(1-b)+b \\
   \LL{a \Arrow b} &= \overline{\LL{a}\mtimes\bar{\LL{b}}}\\
   \LL{a \Xor b} &= \LL{a} + \LL{b} - 2\mtimes\LL{a}\mtimes\LL{b}=(\LL{a}-\LL{b})^2\\
   \LL{(a = b)} &=\LL{a}\mtimes \LL{b} + \bar{\LL{a}}\bar{\LL{b}} =\overline{(\LL{a}-\LL{b})^2}
-  \end{align*}
+\end{align*}
 
+% TODO: Look into using max for Or and min for And. How is the completion of these different
+% from the definitions above? 
+ 
 The indicator function $\Ind_a(x)$ which for $a,x \in B$ returns
 $1$ if $a$ equals $x$ and $0$ otherwise, is just $\_=\_$.
 
@@ -146,12 +149,14 @@ We shall now make an assumption fundamental to this vector space approach to log
 
 The justification for such an assumption  comes from the ``associational'' theories of Robert Firth (``you shall know the meaning of words by the company they keep''), \cite{firth-57}. In natural language processing, such a ``vector representation'' of words (including words such as {\sc London} and {\sc Paris}) has met with some success.  Various mechanisms have been devised (e.g.{} \cite{word-to-vec}) using associational techniques to associate dense vectors with objects. Determining the dimensionality of this vector space now becomes a critical task in this approach to knowledge representation. Empirically, \(n=300\) and \(n=600\) have been used; likely these numbers are low for general knowledge representation tasks. 
 
+Note that the linear representation automatically comes with a ``built-in'' similarity relation $\sim$ (the cosine distance between the vectors).
+
 %We shall assume an external mechanism has been used to identify the individuals in the domain of interest to us (e.g.{} the characters in some novel), based on empirically available data. Further, this may have been done using ``distributional'' techniques, so that the individuals are in fact represented as (dense) vectors in some high dimensional space $U$ \cite{word-to-vec}. This linear representation automatically comes with a ``built-in'' similarity relation $\sim$ (the cosine distance between the vectors). The value of $n$ will depend on the amount of data available and the number of individuals; $n=300$ and $n=600$ have been used to create vectors for words in various corpora. Determining the right value of \(n\) is a critical task in this approach to knowledge representation.
 
 
 We can extend the technique of indicator functions discussed above to $n$-vectors. By $\Ind_a(x)$ (for $a,x$ $n$-vectors over \(B\)) we will mean \(\Pi_{i   \in 1\ldots n} \Ind_{a_i}(x_i)\).  Therefore, any function \(f:B^n \rightarrow \Re\) can be represented as a multilinear polynomial (its ``Fourier expansion'') \cite{boolean-function}: 
 \begin{equation}\label{eqn:fourier-expansion}
-\Sigma_{a \in \{0,1\}^n} f(a)\Ind_{a}(x)
+\LL{f} \defeq \Sigma_{a \in \{0,1\}^n} f(a)\Ind_{a}(x)
 \end{equation}
 
 
@@ -164,7 +169,7 @@ $$ c_0 + \Sigma_{k \in 1\ldots m} (c_k\; \Pi_{i \in A_k} x_i)$$
 Let us work out $\mbox{and2}: \{0,1\}^2 \rightarrow \Re$ (a unary function that returns 1 iff both components are 1):
 
 \begin{align*}
-and2(x)  &= 1\mtimes \Ind_{(1,1)}(x) + 0\mtimes\Ind_{(1,0)}(x) + 0\mtimes\Ind_{(0,1)}(x) + 0\mtimes\Ind_{(0,0)}(x)\\
+\LL{and2(x)}  &= 1\mtimes \Ind_{(1,1)}(x) + 0\mtimes\Ind_{(1,0)}(x) + 0\mtimes\Ind_{(0,1)}(x) + 0\mtimes\Ind_{(0,0)}(x)\\
 &= \Ind_{(1,1)}(x) \\
 &= (1 \mtimes x_1+0\mtimes(1-x_1))\mtimes(1 \mtimes x_2+0\mtimes(1-x_2))\\
   &=x_1\mtimes x_2 
@@ -172,22 +177,46 @@ and2(x)  &= 1\mtimes \Ind_{(1,1)}(x) + 0\mtimes\Ind_{(1,0)}(x) + 0\mtimes\Ind_{(
 \end{example}
 
 \subsubsection{Representing first-order predicates}
-We can use the technique of indicator functions to represent a $k$-ary predicate $p$ as a multilinear polynomial over $kn$ variables. 
-$$p(x_1,\ldots, x_k)= \Sigma_{a_1,\ldots,a_k \in \{0,1\}^n} p(a_1, \ldots, a_k) \mtimes \Pi_{i \in 1\ldots k} \Ind_{a_i}(x_i)$$
+We can use the technique of indicator functions to represent a $k$-ary predicate $p$ as a multilinear polynomial over \(kn\) variables. 
+\begin{equation}
+\LL{p(x_1,\ldots, x_k)} \defeq \Sigma_{a_1,\ldots,a_k \in U} p(a_1, \ldots, a_k) \mtimes \Pi_{i \in 1\ldots k} \Ind_{a_i}(x_i)  
+\end{equation}
 
-\noindent Note that this technique can be used to represent the equality predicate: Here $p(a,b)=1$ if $a=b$, and $0$ otherwise.
+%% TODO: Somewhere we need to introduce the point that p is represented by n^k numbers only.
+%% We have to find a way to use the linear expansion here to reduce the size of these formulas
+%%
 
-% TODO: vj Check. Why do we need this?
+Importantly, the above representation is linear in \(p(a_1, \ldots, a_k)\). If the extension of the predicate is only partially known, each value for which it is not known can be replaced by a variable without affecting multilinearity. In this sense, the representation supports a form of ``higher-orderedness'' as well.
+
+Note that this technique can be used to represent the equality predicate: Here $p(a,b)=1$ if $a=b$, and $0$ otherwise.
+
 A $k$-ary function $f:U^k \rightarrow U$ is represented by $n$ polynomials, one for each dimension.
 
-The Boolean operations are defined as in Section~\ref{section:prop-logic}. Since the domain is finite, existential quantification is represented by a finite disjunction, and universal quantification by a finite conjunction. 
+The Boolean operations are defined as in Section~\ref{section:prop-logic}. Since the domain is finite, existential quantification is represented by a finite disjunction:
+\begin{equation}
+  \LL{\exists X \, \phi}\defeq \LL{\bigvee_{a \in U} \phi[a/X]}
+\end{equation}
+\noindent Universal quantification is represented by a finite conjunction:
+\begin{equation}
+  \LL{\forall X \, \phi} \defeq \LL{\bigwedge_{a \in U} \phi[a/X]}
+\end{equation}
 
-Thus, any first-order formula (with equality) in a logical vocabulary \({\cal L}\) can be represented as multilinear polynomial over \(B\). 
+Thus, any first-order formula (with equality) in a logical vocabulary \({\cal L}\) can be represented as multilinear polynomial over \(B\). Importantly, formulas with free variables are representable as well.
+
+\begin{example}
+  We can represent the formula \(\forall X, Y. P(X,Y) \leftarrow \exists Z. r(X,Z) \wedge P(Z, Y) \) (for \(r\) a binary predicate whose extension is known and \(P\) a binary predicate whose extension is not known) as follows. We introduce \(|U|^2\) variables \(P_{a,b}\) for \(a,b\in U\):
+  \[
+  \begin{array}{lll}
+    \LL{P(Z,Y)} &=& \Sigma_{a,b \in U} P_{a,b} \mtimes \LL{Z=a}\mtimes \LL{Y=B}\\
+    \LL{r(X,Z)} &=& \Sigma_{a,b \in U} r(a,b) \mtimes \LL{X=a}\mtimes \LL{Z=B}\\    
+    \LL{\exists Z\ r(X,Z)\wedge P(Z,Y)} &=& 
+  \end{array}
+  \]
+\end{example}
+
 
 \subsection{Tensor representation}
-A multilinear function $U^k \rightarrow \Re$ can be represented directly as a (covariant) tensor $T^k(U)$ \cite[Chapter 8]{lee-book-2000}. The tensor maps a tuple \tuple{u_1,\ldots, u_k} to $1$ if the tuple is in the relation and to $0$ otherwise. Function application is implemented through tensor contraction. Note that in practice such a tensor is implemented extensionally merely as a \(k\)-dimensional array with \(n\) elements in each dimension (thus requiring \(n^k\) numbers). 
-
-A similar observation is made in \cite{grefenstette-2013} (though the underlying connection with multilinear polynomials is not).
+A multilinear function $U^k \rightarrow \Re$ can be represented directly as a (covariant) tensor $T_k(U)$ \cite[Chapter 8]{lee-book-2000}. The tensor maps a tuple \tuple{u_1,\ldots, u_k} to $1$ if the tuple is in the relation and to $0$ otherwise. Function application is implemented through tensor contraction. Note that in practice such a tensor is implemented extensionally merely as a \(k\)-dimensional array with \(n\) elements in each dimension (thus requiring \(n^k\) numbers). 
 
 For more details, please see Appendix~\ref{sec:tensor} where a relatively self-contained background is provided for tensors, and examples worked out. 
 
